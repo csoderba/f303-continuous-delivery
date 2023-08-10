@@ -13,13 +13,13 @@ jobs:
         uses: actions/checkout@v3
       - name: Build application
         run: |
-          cmake . -B build/Release --toolchain cmake/arm-none-eabi.cmake -DCMAKE_BUILD_TYPE=Release \
-          && cmake --build build/Release
+          cmake . -B build/Debug --toolchain cmake/arm-none-eabi.cmake -DCMAKE_BUILD_TYPE=Debug \
+          && cmake --build build/Debug
       - name: Save target binary
         uses: actions/upload-artifact@v3
         with:
-          name: f303
-          path: build/Release/f303
+          name: f446re
+          path: build/Debug/f446re
   flash:
     runs-on: self-hosted
     needs: build
@@ -29,6 +29,6 @@ jobs:
       - name: Download target binary
         uses: actions/download-artifact@v3
         with:
-          name: f303
+          name: f446re
       - name: Flash target
-        run: gdb-multiarch -x gdb-st-link-flash-and-exit f303
+        run: gdb-multiarch -x gdb-st-link-flash-and-exit f446re

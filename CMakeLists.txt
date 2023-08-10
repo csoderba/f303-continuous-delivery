@@ -5,23 +5,23 @@ cmake_print_variables(PROJECT_SOURCE_DIR)
 cmake_print_variables($ENV{PATH})
 
 # project name
-project(f303)
+project(f446re)
 
 # select linker script
-set(LINKER_SCRIPT "ld/stm32f303xc.ld")
+set(LINKER_SCRIPT "ld/LinkerScript.ld")
 
 # define CPU OPTIONS
-set(CPU_OPTIONS -mthumb -mcpu=cortex-m4)
+set(CPU_OPTIONS -mcpu=cortex-m4 -mthumb -mfloat-abi=soft)
 
 # optimizations (-O0 -O1 -O2 -O3 -Os -Ofast -Og -flto)
-set(CMAKE_C_FLAGS_DEBUG "-Og -g -DDEBUG")
-set(CMAKE_CXX_FLAGS_DEBUG "-Og -g")
-set(CMAKE_C_FLAGS_RELEASE "-Os -flto")
-set(CMAKE_CXX_FLAGS_RELEASE "-Os -flto")
+set(CMAKE_C_FLAGS_DEBUG "-g3 -O0 -DDEBUG")
+#set(CMAKE_CXX_FLAGS_DEBUG "-Og -g")
+set(CMAKE_C_FLAGS_RELEASE "-Os")#-flto")
+#set(CMAKE_CXX_FLAGS_RELEASE "-Os -flto")
 
 add_compile_options(
     ${CPU_OPTIONS}
-    $<$<COMPILE_LANGUAGE:C>:-std=c11>
+    $<$<COMPILE_LANGUAGE:C>:-std=gnu11>
     $<$<COMPILE_LANGUAGE:CXX>:-std=c++17>
     $<$<COMPILE_LANGUAGE:CXX>:-fms-extensions>
     $<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>
@@ -30,21 +30,23 @@ add_compile_options(
     $<$<COMPILE_LANGUAGE:CXX>:-fno-threadsafe-statics>
     -fstrict-volatile-bitfields
     -ffunction-sections
-    -fno-threadsafe-statics
+    #-fno-threadsafe-statics
 
-    -Werror
+    --specs=nano.specs
+    
+    #-Werror
     -Wall
-    -Wextra
-    -Wcast-align
-    -Wconversion
-    -Wsign-conversion
-    -Wold-style-cast
-    -Wshadow
-    -Wlogical-op
-    -Wsuggest-override
-    -Wsuggest-final-types
-    -Wsuggest-final-methods
-    -pedantic
+    #-Wextra
+    #-Wcast-align
+    #-Wconversion
+    #-Wsign-conversion
+    #-Wold-style-cast
+    #-Wshadow
+    #-Wlogical-op
+    #-Wsuggest-override
+    #-Wsuggest-final-types
+    #-Wsuggest-final-methods
+    #-pedantic
 )
 
 include_directories(
@@ -57,16 +59,15 @@ link_directories(
 
 # list of modules to build final firmware
 add_executable(${PROJECT_NAME}
-    src/main.cpp
-    src/startup/startup.cpp
-    src/startup/stack.cpp
-    src/startup/handlers_cm.cpp
+    src/main.c
 )
 
 target_link_libraries(${PROJECT_NAME}
     ${CPU_OPTIONS}
     -T${LINKER_SCRIPT}
-    -nostartfiles
+    -Wl,-Map=${PROJECT_NAME}.map
+    --specs=nosys.specs
+    -nostartfiles  
     m
     # -nostdlib
 )
